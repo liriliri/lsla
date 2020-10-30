@@ -1,0 +1,29 @@
+{
+  "name": "lsla",
+  "version": "0.0.1",
+  "description": "Scripts used by liriliri projects",
+  "main": "index.js",
+  "bin": {
+    "lsla": "./bin/lsla.js"
+  },
+  "scripts": {
+    "format": "prettier bin/*.js *.js --write"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liriliri/lsla.git"
+  },
+  "author": "surunzi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liriliri/lsla/issues"
+  },
+  "homepage": "https://github.com/liriliri/lsla#readme",
+  "dependencies": {
+    "licia": "^1.27.0",
+    "webfonts-generator": "^0.4.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.1.2"
+  }
+}
