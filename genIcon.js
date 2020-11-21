@@ -1,4 +1,4 @@
-const webfontsGenerator = require('webfonts-generator')
+const webfontsGenerator = require('@vusion/webfonts-generator')
 const fs = require('licia/fs')
 const map = require('licia/map')
 const filter = require('licia/filter')
