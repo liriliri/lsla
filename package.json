@@ -1,6 +1,6 @@
 {
-  "name": "lsla",
-  "version": "0.0.1",
+  "name": "@liriliri/lsla",
+  "version": "0.1.0",
   "description": "Scripts used by liriliri projects",
   "main": "index.js",
   "bin": {
@@ -22,9 +22,9 @@
   "dependencies": {
     "@vusion/webfonts-generator": "^0.6.1",
     "execa": "^4.1.0",
-    "licia": "^1.27.0"
+    "licia": "^1.27.0",
+    "prettier": "^2.2.0",
+    "shx": "^0.3.3"
   },
-  "devDependencies": {
-    "prettier": "^2.1.2"
-  }
+  "devDependencies": {}
 }
