@@ -1,6 +1,6 @@
 {
   "name": "@liriliri/lsla",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Scripts used by liriliri projects",
   "main": "index.js",
   "bin": {
