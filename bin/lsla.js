@@ -27,6 +27,8 @@ if (contain(['prettier', 'shx'], cmd)) {
   )
 } else if (contain(['genIcon'], cmd)) {
   require('../' + cmd)(options)
+} else if (contain(['genColor'], cmd)) {
+  require('../' + cmd)(options)
 } else {
   console.log('Cmd not supported')
 }

@@ -19,7 +19,7 @@ module.exports = async function (options) {
   const indexPath = iconDir + '/icon.json'
   if (await fs.exists(indexPath)) {
     const icons = JSON.parse(await fs.readFile(indexPath, 'utf8'))
-    each(icons, icon => {
+    each(icons, (icon) => {
       files.push(path.resolve(iconDir, icon))
     })
   }
