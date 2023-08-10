@@ -1,5 +1,6 @@
 const fs = require('licia/fs')
 const each = require('licia/each')
+const startWith = require('licia/startWith')
 const contain = require('licia/contain')
 const kebabCase = require('licia/kebabCase')
 const { theme } = require('antd')
@@ -20,7 +21,7 @@ module.exports = async function (options) {
   scss += '\n// dark\n'
   config.algorithm = theme.darkAlgorithm
   each(theme.getDesignToken(config), (val, key) => {
-    if (filter(key)) {
+    if (filter(key) || filterDark(key)) {
       return
     }
     scss += `$${kebabCase(key)}-dark: ${val};\n`
@@ -28,29 +29,40 @@ module.exports = async function (options) {
   await fs.writeFile(output, scss, 'utf8')
 }
 
+const colors = [
+  'blue',
+  'purple',
+  'cyan',
+  'green',
+  'magenta',
+  'pink',
+  'red',
+  'orange',
+  'yellow',
+  'volcano',
+  'geekblue',
+  'gold',
+  'lime',
+]
+
 function filter(key) {
-  if (
-    contain(
-      [
-        'blue',
-        'purple',
-        'cyan',
-        'green',
-        'magenta',
-        'pink',
-        'red',
-        'orange',
-        'yellow',
-        'volcano',
-        'geekblue',
-        'gold',
-        'lime',
-      ],
-      key
-    )
-  ) {
+  if (contain(colors, key)) {
     return true
   }
 
   return !contain(key, '-') && /\d/.test(key)
+}
+
+function filterDark(key) {
+  if (startWith(key, 'color') || startWith(key, 'boxShadow')) {
+    return false
+  }
+
+  for (const color of colors) {
+    if (startWith(key, color)) {
+      return false
+    }
+  }
+
+  return true
 }
