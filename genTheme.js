@@ -1,15 +1,28 @@
 const fs = require('licia/fs')
 const each = require('licia/each')
 const startWith = require('licia/startWith')
+const endWith = require('licia/endWith')
 const contain = require('licia/contain')
 const kebabCase = require('licia/kebabCase')
+const camelCase = require('licia/camelCase')
 const { theme } = require('antd')
 
 module.exports = async function (options) {
   const { input, output } = options
-
-  let scss = '// light\n'
   const config = JSON.parse(await fs.readFile(input, 'utf8'))
+
+  let result = ''
+  if (endWith(output, '.ts')) {
+    result = await outputTs(config)
+  } else {
+    result = await outputScss(config, output)
+  }
+
+  await fs.writeFile(output, result, 'utf8')
+}
+
+async function outputScss(config, output) {
+  let scss = '// light\n'
 
   each(theme.getDesignToken(config), (val, key) => {
     if (filter(key)) {
@@ -26,7 +39,30 @@ module.exports = async function (options) {
     }
     scss += `$${kebabCase(key)}-dark: ${val};\n`
   })
-  await fs.writeFile(output, scss, 'utf8')
+
+  return scss
+}
+
+function outputTs(config) {
+  let ts = '// light\n'
+
+  each(theme.getDesignToken(config), (val, key) => {
+    if (filter(key)) {
+      return
+    }
+    ts += `export const ${camelCase(key)} = \`${val}\`\n`
+  })
+
+  ts += '\n// dark\n'
+  config.algorithm = theme.darkAlgorithm
+  each(theme.getDesignToken(config), (val, key) => {
+    if (filter(key) || filterDark(key)) {
+      return
+    }
+    ts += `export const ${camelCase(key)}Dark = \`${val}\`\n`
+  })
+
+  return ts
 }
 
 const colors = [
