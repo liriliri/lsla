@@ -5,6 +5,7 @@ const endWith = require('licia/endWith')
 const contain = require('licia/contain')
 const kebabCase = require('licia/kebabCase')
 const camelCase = require('licia/camelCase')
+const cloneDeep = require('licia/cloneDeep')
 const { theme } = require('antd')
 
 module.exports = async function (options) {
@@ -22,44 +23,64 @@ module.exports = async function (options) {
 }
 
 async function outputScss(config, output) {
-  let scss = '// light\n'
-
-  each(theme.getDesignToken(config), (val, key) => {
-    if (filter(key)) {
-      return
-    }
-    scss += `$${kebabCase(key)}: ${val};\n`
-  })
-
-  scss += '\n// dark\n'
-  config.algorithm = theme.darkAlgorithm
-  each(theme.getDesignToken(config), (val, key) => {
-    if (filter(key) || filterDark(key)) {
-      return
-    }
-    scss += `$${kebabCase(key)}-dark: ${val};\n`
-  })
-
-  return scss
+  return outputTpl(
+    config,
+    (key, val, isDark) => {
+      if (isDark) {
+        return `$${kebabCase(key)}-dark: ${val};\n`
+      } else {
+        return `$${kebabCase(key)}: ${val};\n`
+      }
+    },
+    config
+  )
 }
 
 function outputTs(config) {
+  return outputTpl(
+    config,
+    (key, val, isDark) => {
+      if (isDark) {
+        return `export const ${camelCase(key)}Dark = \`${val}\`\n`
+      } else {
+        return `export const ${camelCase(key)} = \`${val}\`\n`
+      }
+    },
+    config
+  )
+}
+
+function outputTpl(config, tpl) {
   let ts = '// light\n'
 
-  each(theme.getDesignToken(config), (val, key) => {
+  const lightConfig = cloneDeep(config)
+  const darkConfig = cloneDeep(config)
+
+  each(config.token, (val, key) => {
+    if (endWith(key, 'Dark')) {
+      const lightKey = key.replace('Dark', '')
+      if (config.token[lightKey]) {
+        delete lightConfig.token[key]
+        darkConfig.token[lightKey] = val
+        delete darkConfig.token[key]
+      }
+    }
+  })
+
+  each(theme.getDesignToken(lightConfig), (val, key) => {
     if (filter(key)) {
       return
     }
-    ts += `export const ${camelCase(key)} = \`${val}\`\n`
+    ts += tpl(key, val, false)
   })
 
   ts += '\n// dark\n'
-  config.algorithm = theme.darkAlgorithm
-  each(theme.getDesignToken(config), (val, key) => {
+  darkConfig.algorithm = theme.darkAlgorithm
+  each(theme.getDesignToken(darkConfig), (val, key) => {
     if (filter(key) || filterDark(key)) {
       return
     }
-    ts += `export const ${camelCase(key)}Dark = \`${val}\`\n`
+    ts += tpl(key, val, true)
   })
 
   return ts
