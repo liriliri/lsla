@@ -10,7 +10,7 @@ const path = require('path')
 const generate = promisify(webfontsGenerator)
 
 module.exports = async function (options) {
-  const { input, output, name } = options
+  const { input, output, name, source } = options
 
   const iconDir = path.resolve(input)
   let files = await fs.readdir(iconDir)
@@ -19,9 +19,14 @@ module.exports = async function (options) {
   const indexPath = iconDir + '/icon.json'
   if (await fs.exists(indexPath)) {
     const icons = JSON.parse(await fs.readFile(indexPath, 'utf8'))
-    each(icons, (icon) => {
-      files.push(path.resolve(iconDir, icon))
-    })
+    for (let i = 0, len = icons.length; i < len; i++) {
+      const icon = icons[i]
+      let p = path.resolve(iconDir, icon)
+      if (!(await fs.exists(p))) {
+        p = path.resolve(source, icon)
+      }
+      files.push(p)
+    }
   }
   const dest = path.resolve(__dirname, './icon')
   const result = await generate({

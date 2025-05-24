@@ -10,6 +10,7 @@ const options = parseArgs(process.argv.slice(2), {
     input: 'string',
     output: 'string',
     name: 'string',
+    source: 'string',
   },
 })
 
