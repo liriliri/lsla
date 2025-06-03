@@ -13,7 +13,7 @@ module.exports = async function (options) {
   const config = JSON.parse(await fs.readFile(input, 'utf8'))
 
   let result = ''
-  if (endWith(output, '.ts')) {
+  if (endWith(output, '.ts') || endWith(output, '.js')) {
     result = await outputTs(config)
   } else {
     result = await outputScss(config, output)
